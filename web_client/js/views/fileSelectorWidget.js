@@ -4,7 +4,7 @@ histomicstk.views.FileSelectorWidget = girder.View.extend({
             id: settings.id,
             name: settings.name
         };
-        this._hierarchyView = new girder.views.HierarchyWidget({
+        this._hierarchyView = new histomicstk.views.HierarchyWidget({
             parentView: this,
             parentModel: girder.currentUser,
             checkboxes: false,
