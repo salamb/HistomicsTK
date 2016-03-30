@@ -1,0 +1,10 @@
+.h-pageable-list.list-group
+  each item in items
+    a.list-group-item(id=item.id class=item.classes href=item.href || '#')
+      if item.right
+        span.h-float-right
+          | item.right
+      if item.badge
+        span.badge
+          | item.badge
+      | item.name
