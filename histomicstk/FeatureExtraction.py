@@ -46,7 +46,8 @@ def FeatureExtraction(Label, In, Ic, W, K=128, Fs=6, Delta=8):
     Morphometry features
     --------------------
     Area	Perimeter	Eccentricity	Circularity
-    MajorAxisLength MinorAxisLength	Extent Solidity
+    MajorAxisLength MinorAxisLength MajorMinorAxisRatio
+    MajorAxisCoords Extent Solidity
     FSDs
     ----
     FSD1	FSD2	FSD3	FSD4	FSD5	FSD6
@@ -70,12 +71,6 @@ def FeatureExtraction(Label, In, Ic, W, K=128, Fs=6, Delta=8):
     ########################################
     """
 
-    # get total regions
-    NumofLabels = Label.max()
-
-    # get Label size x
-    size_x = Label.shape[0]
-
     # initialize centroids
     CentroidX = []
     CentroidY = []
@@ -87,13 +82,23 @@ def FeatureExtraction(Label, In, Ic, W, K=128, Fs=6, Delta=8):
     Circularity = []
     MajorAxisLength = []
     MinorAxisLength = []
+    MajorMinorAxisRatio = []
     Extent = []
     Solidity = []
+
+    # get total regions and label size x
+    NumofLabels = 0
+    size_x = 0
+
+    if np.any(Label > 0):
+        NumofLabels = Label.max()
+        size_x = Label.shape[0]
 
     # initialize FSD feature group
     FSDGroup = np.zeros((NumofLabels, Fs))
 
-    # initialize Nuclei, Cytoplasms
+    # initialize Major Axis X,Y coords, Nuclei, Cytoplasms
+    MajorAxisCoords = [[] for i in range(NumofLabels)]
     Nuclei = [[] for i in range(NumofLabels)]
     Cytoplasms = [[] for i in range(NumofLabels)]
 
@@ -126,8 +131,36 @@ def FeatureExtraction(Label, In, Ic, W, K=128, Fs=6, Delta=8):
                 Circularity,
                 4 * math.pi * region.area / math.pow(region.perimeter, 2)
             )
-        MajorAxisLength = np.append(MajorAxisLength, region.major_axis_length)
-        MinorAxisLength = np.append(MinorAxisLength, region.minor_axis_length)
+        # get Major axis lengths from region properity
+        MajorAxisLength = np.append(
+            MajorAxisLength, region.major_axis_length
+        )
+        MinorAxisLength = np.append(
+            MinorAxisLength, region.minor_axis_length
+        )
+        # find Major axis ratios
+        MajorMinorAxisRatio = np.append(
+            MajorMinorAxisRatio,
+            region.major_axis_length/region.minor_axis_length
+        )
+        # find length of Maxjor X and Y
+        if region.orientation < 0:
+            lengthofMajorX = (region.major_axis_length/2) * \
+                math.sin(region.orientation)
+            lengthofMajorY = (region.major_axis_length/2) * \
+                math.cos(region.orientation) * (-1)
+        else:
+            lengthofMajorX = (region.major_axis_length/2) * \
+                math.sin(region.orientation) * (-1)
+            lengthofMajorY = (region.major_axis_length/2) * \
+                math.cos(region.orientation)
+        # add lengths to Centroids
+        MajorAxisX = region.centroid[0] + lengthofMajorX
+        MajorAxisY = region.centroid[1] + lengthofMajorY
+        # get MajorAxisCoords, Extent, Solidity
+        MajorAxisCoords[region.label-1] = [
+            math.ceil(MajorAxisX), math.ceil(MajorAxisY)
+        ]
         Extent = np.append(Extent, region.extent)
         Solidity = np.append(Solidity, region.solidity)
         # get bounds of dilated nucleus
@@ -177,6 +210,8 @@ def FeatureExtraction(Label, In, Ic, W, K=128, Fs=6, Delta=8):
     df['Circularity'] = Circularity
     df['MajorAxisLength'] = MajorAxisLength
     df['MinorAxisLength'] = MinorAxisLength
+    df['MajorMinorAxisRatio'] = MajorMinorAxisRatio
+    df['MajorAxisCoords'] = MajorAxisCoords
     df['Extent'] = Extent
     df['Solidity'] = Solidity
 
