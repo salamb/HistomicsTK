@@ -43,6 +43,8 @@ RUN conda config --add channels https://conda.binstar.org/cdeepakroy && \
     conda clean -i -l -t -y && \
     rm -rf /root/.cache/pip/*
 
+RUN pip install --trusted-host www.simpleitk.org -f http://www.simpleitk.org/SimpleITK/resources/software.html --timeout 30 SimpleITK
+
 # define entrypoint through which all CLIs can be run
 WORKDIR $htk_path/server
 ENTRYPOINT ["/build/miniconda/bin/python", "cli_list_entrypoint.py"]

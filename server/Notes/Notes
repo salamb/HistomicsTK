@@ -1,0 +1,54 @@
+MODIFICATIONS
+ 
+in histomicstk/__init.py
+
+Using local version of dsarchive/histomicstk:dev via a local repository
+at port 5000
+
+localhost:5000/dsarchive/histomicstk:dev
+
+must add module to slicer_cli_list.json
+
+in girder worker /cfg 
+add :
+[docker]
+excluded_images='localhost:5000/dsarchive/histomicstk:dev'
+
+TODO:
+must find definitions/explanation for xml tags: channel, index
+
+PROBLEMS:
+Note Gausian does not work on a large image!!!!
+NOne of the moduels work with a large image
+
+
+
+How to use registry
+
+registry is started by running 
+
+docker run -d -p 5000:5000 --restart=always --name registry registry:2
+
+first tage the image
+
+ docker tag dsarchive/histomicstk localhost:5000/dsarchive/histomicstk
+
+then push the image
+
+docker push localhost:5000/dsarchive/histomicstk:dev
+
+
+COMMANDS
+docker run -v $(pwd):/mnt/girder_worker/data dsarchive/histomicstk:v0.1.2 NucleiSegmentation /mnt/girder_worker/data/nuc.jpeg /mnt/girder_worker/data/mask.jpeg /mnt/girder_worker/data/test.anot
+
+docker run -v $(pwd):/mnt/girder_worker/data -it --entrypoint=/bin/bash dsarchive/histomicstk:v0.1.2 
+
+
+docker images -q --filter "dangling=true" | xargs docker rmi
+
+docker rm `docker ps --no-trunc -aq`
+
+
+
+
+

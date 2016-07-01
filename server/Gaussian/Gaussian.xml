@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<executable>
+  <category>HistomicsTK</category>
+  <title>Gaussian</title>
+  <description>Performs Gaussian Blur over designated image</description>
+  <version>0.1.0</version>
+  <documentation-url>https://itk.org/SimpleITKDoxygen09/html/SimpleGaussian_8py-example.html</documentation-url>
+  <license>Apache 2.0</license>
+  <contributor></contributor>
+  <acknowledgements>Adapted from Simple itk example</acknowledgements>
+  <parameters>
+    <label>IO</label>
+    <description>Input/output parameters</description>
+    <image>
+      <name>inputImageFile</name>
+      <label>Input Image</label>
+      <description>Input image to be blurred</description>
+      <channel>input</channel>
+      <index>0</index>
+    </image>
+    <double>
+      <name>sigma</name>
+      <label>sigma</label>
+      <description>Standard deviation used for the gaussian function</description>
+      <channel>input</channel>
+      <index>1</index>
+      <default>10</default>
+    </double>
+    <image>
+      <name>outputImageFile</name>
+      <label>output Image</label>
+      <description>result after gaussian blur</description>
+      <channel>output</channel>
+      <index>2</index>
+    </image>
+  </parameters>
+</executable>
